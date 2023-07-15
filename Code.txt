@@ -1,0 +1,44 @@
+module electric (
+  input wire clk,
+  input wire reset,
+  input wire [15:0] amount_paid,
+  input wire [15:0] bill_number,
+  output reg [15:0] bill_amount,
+  input wire [15:0] paid_amount,
+  output reg payment_success,
+  input wire [15:0] name
+);
+
+  always @(posedge clk) begin
+    if (reset) begin
+      bill_amount <= 0;
+      payment_success <= 0;
+    end else begin
+      bill_amount <= amount_paid;
+      if (paid_amount >= bill_amount) begin
+        if (paid_amount <= 1000) begin
+          payment_success <= 1;
+        end else begin
+          payment_success <= 0;
+        end
+      end else begin
+        payment_success <= 0;
+      end
+    end
+  end
+
+  always @(posedge clk) begin
+    if (payment_success) begin
+      if (paid_amount >= bill_amount) begin
+        $display("Payment successful");
+        $display("Name: %s", name);
+        $display("Bill number: %d", bill_number);
+        $display("Amount paid: %d", amount_paid);
+        $display("Bill amount: %d", bill_amount);
+      end else begin
+        $display("Payment unsuccessful-");
+      end
+    end
+  end
+
+endmodule
